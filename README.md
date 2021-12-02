@@ -1,6 +1,12 @@
 # Advent of Code 2021
 
-## [Day 1: Sonar Sweep](https://www.reddit.com/r/adventofcode/comments/r66vow/2021_day_1_solutions/) 🏌️
+## My workflow
+
+I have in the repo `work.rb` and `input.txt`. I open the project in VS Code and hit Cmd+Shift+B. This will trigger the [build task](./vscode/tasks.json) that runs a file watcher (`npm install --global onchange`) which will run the code whenever I save.
+
+## Solutions
+
+### [Day 1: Sonar Sweep](https://www.reddit.com/r/adventofcode/comments/r66vow/2021_day_1_solutions/) 🏌️
 
 <details><summary>See code</summary>
 
@@ -19,7 +25,7 @@ p $<.map(&:to_i).each_cons(3).each_cons(2).count{_2.sum>_1.sum}
 
 </details>
 
-## [Day 2: Day 2: Dive!](https://www.reddit.com/r/adventofcode/comments/r6zd93/2021_day_2_solutions/)
+### [Day 2: Day 2: Dive!](https://www.reddit.com/r/adventofcode/comments/r6zd93/2021_day_2_solutions/)
 
 <details><summary>See code</summary>
 
