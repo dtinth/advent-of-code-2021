@@ -62,7 +62,7 @@ p xx*y
 
 </details>
 
-### [Day 3: Dive!](https://www.reddit.com/r/adventofcode/comments/r6zd93/2021_day_2_solutions/)
+### [Day 3: Dive!](https://www.reddit.com/r/adventofcode/comments/r7r0ff/2021_day_3_solutions/)
 
 <details><summary>See code</summary>
 
@@ -91,6 +91,40 @@ end
 og = og[0].join.to_i 2
 co = co[0].join.to_i 2
 p [og,co,og*co]
+```
+
+</details>
+
+### [Day 4: Giant Squid](https://www.reddit.com/r/adventofcode/comments/r8i1lq/2021_day_4_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+numbers = gets.split(',').map(&:to_i)
+
+class Board
+  def initialize(data)
+    @data = data
+    @basis = (data + data.transpose)
+  end
+  def win?(numbers)
+    @basis.any? { |x| (numbers & x).size == 5 }
+  end
+  def data
+    @data
+  end
+end
+
+boards = $<.read.split(/\n\s*\n/).map { _1.lines.map { |x| x.split.map(&:to_i) }.reject(&:empty?) }.map { |x| Board.new(x) }
+last_win = 0
+(0..numbers.length).each do |c|
+  selected_numbers = numbers[0..c]
+  winning = boards.filter { _1.win?(selected_numbers) }
+  if winning.length > 0
+    p winning.map { |x| (x.data.flatten - selected_numbers).sum * numbers[c] }
+    boards -= winning
+  end
+end
 ```
 
 </details>
