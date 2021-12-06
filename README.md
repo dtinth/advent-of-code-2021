@@ -128,3 +128,60 @@ end
 ```
 
 </details>
+
+### [Day 5: Hydrothermal Venture](https://www.reddit.com/r/adventofcode/comments/r9824c/2021_day_5_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+data = $<.map { |line|
+  line.split('->').map { |part|
+    part.split(',').map(&:to_i)
+  }
+}
+
+o = Hash.new(0)
+data.each do |(x1, y1), (x2, y2)|
+  a, b = [x1, x2].sort
+  c, d = [y1, y2].sort
+  if a == b || c == d
+    (a..b).each { |x|
+      (c..d).each { |y|
+        o[[x, y]] += 1
+      }
+    }
+  else
+    # Comment out this block for Part 1.
+    o[[x1, y1]] += 1
+    while x1 < x2
+      if y1 < y2
+        y1 += 1
+      else
+        y1 -= 1
+      end
+      x1 += 1
+      o[[x1, y1]] += 1
+    end
+    while x1 > x2
+      if y1 < y2
+        y1 += 1
+      else
+        y1 -= 1
+      end
+      x1 -= 1
+      o[[x1, y1]] += 1
+    end
+  end
+end
+
+(0..10).each { |y|
+  (0..10).each { |x|
+    print (o[[x, y]] >= 1 ? o[[x,y]].to_s : '.')
+  }
+  puts
+}
+
+p o.values.count { |x| x > 1 }
+```
+
+</details>
