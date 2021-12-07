@@ -134,6 +134,7 @@ end
 <details><summary>See code</summary>
 
 ```ruby
+# Ruby, 43 / 66
 data = $<.map { |line|
   line.split('->').map { |part|
     part.split(',').map(&:to_i)
@@ -185,3 +186,24 @@ p o.values.count { |x| x > 1 }
 ```
 
 </details>
+
+### [Day 6: Lanternfish](https://www.reddit.com/r/adventofcode/comments/r9z49j/2021_day_6_solutions/)
+
+```ruby
+# Ruby, 1337 / 528
+# (Cleaned up)
+fishes = gets.split(',').map { _1.to_i }.tally
+256.times do
+  next_fishes = Hash.new(0)
+  fishes.each do |k, f|
+    if k == 0
+      next_fishes[8] += f
+      next_fishes[6] += f
+    else
+      next_fishes[k - 1] += f
+    end
+  end
+  fishes = next_fishes
+end
+p fishes.values.sum
+```
