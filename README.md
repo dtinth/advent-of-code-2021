@@ -189,6 +189,8 @@ p o.values.count { |x| x > 1 }
 
 ### [Day 6: Lanternfish](https://www.reddit.com/r/adventofcode/comments/r9z49j/2021_day_6_solutions/)
 
+<details><summary>See code</summary>
+
 ```ruby
 # Ruby, 1337 / 528
 # (Cleaned up)
@@ -207,3 +209,103 @@ fishes = gets.split(',').map { _1.to_i }.tally
 end
 p fishes.values.sum
 ```
+
+</details>
+
+### [Day 7: The Treachery of Whales](https://www.reddit.com/r/adventofcode/comments/rar7ty/2021_day_7_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+crabs = gets.split(',').map(&:to_i)
+p (0..1000).map { |u| crabs.sum { |x| (x-u).abs } }.min
+p (0..1000).map { |u| crabs.sum { |x| n = (x-u).abs; (n*(n+1))/2 } }.min
+```
+
+</details>
+
+### [Day 8: Seven Segment Search ](https://www.reddit.com/r/adventofcode/comments/rbj87a/2021_day_8_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 307 / 38
+segments = [ 'abcefg', 'cf', 'acdeg', 'acdfg', 'bcdf', 'abdfg', 'abdefg', 'acf', 'abcdefg', 'abcdfg' ]
+data = [*$<].join.gsub(/\|\s+/, "| ").lines
+
+# Part 1
+p data.flat_map { _1.split('|').last.split }.map { _1.chars.sort.join }.count { [1, 4, 7, 8].map { |x| segments[x].length }.include?(_1.length) }
+
+# Part 2
+sum = 0
+data.each do |x|
+    input, output = x.split('|').map(&:split)
+    correct = 'abcdefg'.chars.permutation.find { |c|
+        v = c.join
+        input.map { |x| x.tr(v, 'abcdefg').chars.sort.join }.sort == segments.sort
+    }.join
+    mapping = segments.map { _1.tr('abcdefg', correct).chars.sort.join }
+    result = output.map { mapping.index(_1.chars.sort.join) }.join.to_i
+    sum += result
+end
+p sum
+```
+
+</details>
+
+### ![Day 9: Smoke Basin](https://www.reddit.com/r/adventofcode/comments/rca6vp/2021_day_9_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 67 / 55
+map = $<.map {|x| x.chomp.chars.map{|c|c.to_i}}
+w = map[0].length
+h = map.length
+pt = -> i,j {
+    return 999 if i >= h || j >= w
+    return 999 if i < 0 || j < 0
+    return map[i][j]
+}
+
+# Part 1
+sum = 0
+(0...h).each do |i|
+    (0...w).each do |j|
+        low_point =
+            pt[i,j] < pt[i+1,j] &&
+            pt[i,j] < pt[i-1,j] &&
+            pt[i,j] < pt[i,j+1] &&
+            pt[i,j] < pt[i,j-1]
+        sum += pt[i,j] + 1 if low_point
+    end
+end
+p sum
+
+# Part 2
+visited = {}
+basins = []
+fill = -> i,j {
+    basin = {size:0}
+    basins << basin
+    traverse = -> i,j {
+        return unless pt[i,j] < 9
+        return if visited[[i,j]]
+        visited[[i,j]] = basin
+        basin[:size] += 1
+        traverse[i-1,j]
+        traverse[i+1,j]
+        traverse[i,j-1]
+        traverse[i,j+1]
+    }
+    traverse[i,j]
+}
+(0...h).each do |i|
+    (0...w).each do |j|
+        fill[i,j]
+    end
+end
+p basins.map { |b| b[:size] }.sort.last(3).inject(&:*)
+```
+
+</details>
