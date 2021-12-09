@@ -253,7 +253,7 @@ p sum
 
 </details>
 
-### ![Day 9: Smoke Basin](https://www.reddit.com/r/adventofcode/comments/rca6vp/2021_day_9_solutions/)
+### [Day 9: Smoke Basin](https://www.reddit.com/r/adventofcode/comments/rca6vp/2021_day_9_solutions/)
 
 <details><summary>See code</summary>
 
