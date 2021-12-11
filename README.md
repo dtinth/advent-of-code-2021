@@ -309,3 +309,123 @@ p basins.map { |b| b[:size] }.sort.last(3).inject(&:*)
 ```
 
 </details>
+
+### [Day 10: Syntax Scoring](https://www.reddit.com/r/adventofcode/comments/rd0s54/2021_day_10_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 333 / 176
+illegal_score = {
+    ')' => 3,
+    ']' => 57,
+    '}' => 1197,
+    '>' => 25137,
+}
+matching = {
+    '(' => ')',
+    '<' => '>',
+    '[' => ']',
+    '{' => '}'
+}
+
+bad = 0
+incomplete_lines = []
+$<.each do |x|
+    stack = []
+    incorrect = false
+    x.strip.chars.each do |y|
+        if matching[y]
+            stack << matching[y]
+        elsif stack[-1] == y
+            stack.pop
+        else
+            bad += illegal_score[y]
+            incorrect = true
+            break
+        end 
+    end
+    incomplete_lines << stack if !incorrect
+end
+p bad
+
+completion_score = {
+    ')' => 1,
+    ']' => 2,
+    '}' => 3,
+    '>' => 4,
+}
+scores = []
+incomplete_lines.each do |stack|
+    current = 0
+    stack.reverse_each do |x|
+        current *= 5
+        current += completion_score[x]
+    end
+    scores << current
+end
+scores.sort!
+p scores[scores.length / 2]
+```
+
+</details>
+
+### [Day 11: Dumbo Octopus](https://www.reddit.com/r/adventofcode/comments/rds32p/2021_day_11_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 873/ 795
+levels = [*$<].map(&:strip).map(&:chars).map { _1.map(&:to_i) }
+
+p levels
+coords = (0...levels.size).to_a.product((0...levels[0].size).to_a)
+total_f = 0
+show = -> { puts levels.map(&:join); puts }
+update = -> {
+    to_flash = {}
+    try_flash = -> i, j {
+        if i >= 0 && i < levels.size && j >= 0 && j < levels[0].size && !to_flash[[i,j]]
+            levels[i][j] += 1
+            if levels[i][j] > 9
+                to_flash[[i,j]] = true
+                total_f += 1
+                try_flash[i-1, j-1]
+                try_flash[i-1, j]
+                try_flash[i-1, j+1]
+                try_flash[i, j-1]
+                try_flash[i, j+1]
+                try_flash[i+1, j-1]
+                try_flash[i+1, j]
+                try_flash[i+1, j+1]
+            end
+        end
+    }
+    coords.each do |i, j|
+        try_flash[i, j]
+    end
+    to_flash.each do |(i, j), _|
+        levels[i][j] = 0
+    end
+}
+
+# Part 1
+p total_f
+
+# Part 2
+n = 0
+loop {
+    update[]
+    n += 1
+    p levels.flatten.uniq
+    if levels.flatten.uniq == [0]
+        p n
+        break
+    end
+}
+```
+
+</details>
+
+
+
