@@ -427,5 +427,97 @@ loop {
 
 </details>
 
+### [Day 12: Passage Pathing](https://www.reddit.com/r/adventofcode/comments/rehj2r/2021_day_12_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 61 / 524
+graph = {}
+
+$<.each do |a|
+    f, t = a.strip.split('-')
+    graph[f] ||= []
+    graph[f] << t
+    graph[t] ||= []
+    graph[t] << f
+end
+
+list = []
+paths = [['start']]
+
+while paths.length > 0
+    path = paths.shift
+    current_node = path[-1]
+
+    if current_node == 'end'
+        list << path
+        p list.length
+        next
+    end
+
+    graph[current_node].each do |vertex|
+        # Part 1: Change max_p to 1.
+        max_p = path.uniq.filter{|a|a=~/^[a-z]+$/}.size == path.filter{|a|a=~/^[a-z]+$/}.size ? 2 : 1
+        if vertex =~ /^[A-Z]+/ || (vertex != 'start' && path.count(vertex) < max_p)
+            paths << path + [vertex]
+        end
+    end
+end
+
+p list.length
+```
+
+</details>
+
+### [Day 13: Transparent Origami](https://www.reddit.com/r/adventofcode/comments/rf7onx/2021_day_13_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 46 / 10
+inp = $<.read
+points = inp.scan(/(\d+),(\d+)/).map { |crd| [crd[0].to_i, crd[1].to_i] }
+
+plot = -> {
+    h = Hash.new
+    xs = []
+    ys = []
+    points.map do |x, y|
+        h[[x, y]] = 1
+        xs << x
+        ys << y
+    end
+    (ys.min..ys.max).each do |y|
+        (xs.min..xs.max).each do |x|
+            print h[[x, y]] ? '#' : '.'
+        end
+        puts
+    end
+}
+
+folds = inp.scan(/fold along (\w+)\=(\d+)/).map { |(axis, value)| [axis, value.to_i] }
+
+p points.length
+
+folds.each do |axis, value|
+    points = points.map { |pt|
+        if axis == 'x'
+            x = pt[0] > value ? value - (pt[0] - value) : pt[0]
+            [x, pt[1]]
+        else
+            y = pt[1] > value ? value - (pt[1] - value) : pt[1]
+            [pt[0], y]
+        end
+    }
+    points = points.uniq
+    p points.length
+end
+
+plot[]
+```
+
+</details>
+
 
 
