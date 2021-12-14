@@ -519,5 +519,52 @@ plot[]
 
 </details>
 
+### [Day 14: Extended Polymerization](https://www.reddit.com/r/adventofcode/comments/rfzq6f/2021_day_14_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 45 / 60
+
+template = gets.strip
+rules = $<.read.scan(/^(\w\w) -> (\w)/)
+rulebook = {}
+rules.each { |pair| rulebook[pair[0]] = pair[1].upcase }
+p template
+p rulebook
+
+part = 2
+case part
+when 1
+    # Unoptimized
+    10.times do
+        template = template.chars.each_cons(2).map { |a, b| [a, rulebook[a+b]].join }.join + template.chars.last
+    end
+    t = template.chars.tally
+    p t.values.max - t.values.min
+when 2
+    # This algorithm also works with part 1
+    paircount = Hash.new(0)
+    template.chars.each_cons(2) { |a, b| paircount[a + b] += 1 }
+    40.times do
+        old_pc = paircount.dup
+        paircount = Hash.new(0)
+        old_pc.each do |k, v|
+            found = rulebook[k]
+            paircount[k[0] + found] += v
+            paircount[found + k[1]] += v
+        end
+    end
+    t = Hash.new(0)
+    paircount.each do |k, v|
+        t[k[0]] += v
+    end
+    t[template[-1]] += 1
+    p t.values.max - t.values.min
+end
+```
+
+</details>
+
 
 
