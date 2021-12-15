@@ -566,5 +566,49 @@ end
 
 </details>
 
+### [Day 15: Chiton](https://www.reddit.com/r/adventofcode/comments/rgqzt5/2021_day_15_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 26 / 1155
+grid = $<.readlines.map { _1.strip.chars.map(&:to_i) }
+
+# Part 1 - Wrong algorithm but right answer.
+#          It assumes that you can only go down and right.
+$cache = {}
+min_risk_level = -> x, y {
+    return 0 if x == 0 && y == 0
+    return 99999999999 if x < 0 || y < 0
+    $cache[[x,y]] ||= [min_risk_level[x-1,y], min_risk_level[x,y-1]].min + grid[y][x]
+}
+p min_risk_level[grid[0].length-1, grid.length-1]
+
+# Part 2 - Brute force algorithm
+grid = (0..4).flat_map { |n| grid.map { |r|
+    (0..4).flat_map { |m| r.map { ((_1 + n + m) - 1) % 9 + 1 } }
+} }
+min = grid.map { _1.map { 999999 } }
+min[0][0] = 0
+cur_risk_level = -> a, x, y {
+    return 999999 if x < 0 || y < 0 || x >= a[0].length || y >= a.length
+    return a[y][x]
+}
+loop do
+    next_min = min.each_with_index.map { |r, y|
+        r.each_with_index.map { |c, x|
+            inh = grid[y][x]
+            [c,inh+cur_risk_level[min,x-1,y], inh+cur_risk_level[min,x+1,y], inh+cur_risk_level[min,x,y-1], inh+cur_risk_level[min,x,y+1]].min
+        }
+    }
+    puts next_min.flatten.count(999999)
+    break if next_min == min
+    min = next_min
+end
+p cur_risk_level[min,grid[0].length-1, grid.length-1]
+```
+
+</details>
+
 
 
