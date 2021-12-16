@@ -606,6 +606,135 @@ loop do
     min = next_min
 end
 p cur_risk_level[min,grid[0].length-1, grid.length-1]
+
+# Part 2 - A* algorithm. Requires `pqueue` gem.
+require 'pqueue'
+visited = {}
+fringe = PQueue.new { |a, b| a.last < b.last }
+fringe.push [0, 0, 0]
+in_bounds = -> i, j { 0 <= i && i < grid.length && 0 <= j && j < grid[0].length }
+last_v = 0
+
+loop do
+    first = fringe.pop
+    break unless first
+
+    i, j, v = first
+    p [[i, j], v, fringe.length] if v > last_v
+    last_v = v
+    if [i, j] == [grid.length - 1, grid[i].length - 1]
+        p v
+        break
+    end
+
+    next if visited[[i, j]]
+    visited[[i, j]] = true
+
+    try_go = -> ii, jj {
+        if in_bounds[ii, jj] && !visited[[ii, jj]]
+            fringe.push [ii, jj, grid[ii][jj] + v]
+        end
+    }
+    try_go[i + 1, j]
+    try_go[i - 1, j]
+    try_go[i, j + 1]
+    try_go[i, j - 1]
+end
+```
+
+</details>
+
+### [Day 16: Packet Decoder](https://www.reddit.com/r/adventofcode/comments/rhj2hm/2021_day_16_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 106 / 100
+input = gets.strip.chars.flat_map { |c| c.to_i(16).to_s(2).rjust(4,'0').chars.map(&:to_i) }
+$versum = 0
+p input
+parse_packet = -> str, i, prefix, ptree {
+    version = str[i...i+3].join.to_i(2)
+    $versum += version
+    puts "#{prefix}Version #{version} sum = #{$versum}"
+    i += 3
+    type = str[i...i+3].join.to_i(2)
+    puts "#{prefix}Packet type = #{type}"
+    i += 3
+    ptree << version << type
+    case type
+    when 4
+        vals = ''
+        ended = false
+        while !ended
+            ended = str[i] == 0
+            i += 1
+            value = str[i...i+4].join
+            puts "#{prefix}value = #{value}"
+            vals += value
+            i += 4
+        end
+        puts "#{prefix}>> = #{vals.to_i(2)}"
+        ptree << vals.to_i(2)
+    else
+        length_type = str[i]
+        i += 1
+        case length_type
+        when 0
+            total_length = str[i...i+15].join.to_i(2)
+            puts "#{prefix}Total length #{total_length}"
+            i += 15
+            end_pos = i + total_length
+            while i < end_pos
+                puts "#{prefix}. #{i}"
+                subpacket = []
+                ptree << subpacket
+                i = parse_packet[str, i, prefix + '..', subpacket]
+            end
+            i = end_pos
+        else
+            n_subpackets = str[i...i+11].join.to_i(2)
+            puts "#{prefix}Subpacket count #{n_subpackets}"
+            i += 11
+            n_subpackets.times do
+                puts "#{prefix}. #{i}"
+                subpacket = []
+                ptree << subpacket
+                i = parse_packet[str, i, prefix + '..', subpacket]
+            end
+        end
+    end
+    i
+}
+
+parse_tree = []
+parse_packet[input, 0, "", parse_tree]
+
+puts "Version sum: #{$versum}"
+
+evaluate = -> a {
+    version, type, *args = a
+    return args[0] if type == 4
+    case type
+    when 0
+        args.map(&evaluate).reduce(0, &:+)
+    when 1
+        args.map(&evaluate).reduce(1, &:*)
+    when 2
+        args.map(&evaluate).min
+    when 3
+        args.map(&evaluate).max
+    when 5
+        evaluate[args[0]] > evaluate[args[1]] ? 1 : 0
+    when 6
+        evaluate[args[0]] < evaluate[args[1]] ? 1 : 0
+    when 7
+        evaluate[args[0]] == evaluate[args[1]] ? 1 : 0
+    else
+        raise "Unknown type #{type}"
+    end
+}
+p evaluate[parse_tree]
 ```
 
 </details>
