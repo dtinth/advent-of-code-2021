@@ -739,5 +739,169 @@ p evaluate[parse_tree]
 
 </details>
 
+### [Day 17: Trick Shot](https://www.reddit.com/r/adventofcode/comments/ri9kdq/2021_day_17_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+  # Ruby, 82 / 31
+  target = gets.scan(/target area: x=([^,]+), y=([^,]+)/)[0].map { eval _1 }
+  p target
+
+  simulate = -> dx, dy {
+      hit, x, y, y_max = false, 0, 0, 0
+      loop do
+          x += dx
+          y += dy
+          dx -= dx > 0 ? 1 : dx < 0 ? -1 : 0
+          dy -= 1
+          y_max = y if y > y_max
+          if target[0].include?(x) && target[1].include?(y)
+              hit = true
+              break
+          end
+          break if y < target[1].min
+      end
+      [hit, x, y, y_max]
+  }
+
+  all_possibilities = (-100..400).to_a.product((-100..100).to_a).map { |dx, dy| simulate[dx, dy] }.filter { _1[0] }
+  p all_possibilities.map { _1.last }.max
+  p all_possibilities.count
+```
+
+</details>
+
+### [Day 18: Snailfish](https://www.reddit.com/r/adventofcode/comments/rizw2c/2021_day_18_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 398 / 349
+$g = 0
+NumberNode = Struct.new(:value, :ident) do
+    def inspect
+        "#{value}"
+    end
+    def to_rb
+        value
+    end
+    def mag
+        value
+    end
+end
+AdditionNode = Struct.new(:left, :right) do
+    def inspect
+        "[#{left.inspect}, #{right.inspect}]"
+    end
+    def to_rb
+        [left.to_rb, right.to_rb]
+    end
+    def mag
+        left.target.mag * 3 + 2 * right.target.mag
+    end
+end
+Edge = Struct.new(:target) do
+    def inspect
+        "#{target.inspect}"
+    end
+    def to_rb
+        target.to_rb
+    end
+end
+
+to_node = -> data {
+    if Array === data
+        left = to_node[data.first]
+        right = to_node[data.last]
+        AdditionNode.new(Edge.new(left), Edge.new(right))
+    else
+        NumberNode.new(data, $g += 1)
+    end
+}
+
+reduce = -> node {
+    all_numbers = []
+    traverse_numbers = -> n {
+        if AdditionNode === n
+            traverse_numbers[n.left.target]
+            traverse_numbers[n.right.target]
+        else
+            all_numbers.push(n)
+        end
+    }
+    traverse_numbers[node]
+    done = false
+    mode = 0
+    traverse_action = -> n, depth = 0, edge {
+        return if done
+        if AdditionNode === n
+            if depth >= 4 && mode == 0
+                left_index = all_numbers.index(n.left.target)
+                right_index = all_numbers.index(n.right.target)
+                if left_index > 0
+                    left = all_numbers[left_index - 1]
+                    # p [:left, left.value, n.left]
+                    left.value += n.left.target.value
+                end
+                # p [:all, all_numbers, left_index, right_index]
+                right = all_numbers[right_index + 1]
+                if right
+                    # p [:right, right.value, n.right]
+                    right.value += n.right.target.value
+                end
+                edge.target = NumberNode.new(0, $g += 1)
+                done = true
+            else
+                traverse_action[n.left.target, depth + 1, n.left]
+                traverse_action[n.right.target, depth + 1, n.right]
+            end
+        else
+            if n.value >= 10 && mode == 1
+                left_value = n.value / 2
+                right_value = n.value - left_value
+                left = NumberNode.new(left_value, $g += 1)
+                right = NumberNode.new(right_value, $g += 1)
+                child = AdditionNode.new(Edge.new(left), Edge.new(right))
+                edge.target = child
+                done = true
+            end
+        end
+    }
+    mode = 0
+    traverse_action[node, 0, nil]
+    mode = 1
+    traverse_action[node, 0, nil]
+    done
+}
+
+add = -> l, r {
+    root = to_node[[l, r]]
+    while reduce[root]
+    end
+    root.to_rb
+}
+
+input = $<.to_a.map { eval _1 }
+
+# Part 1
+p input.inject { |left, right|
+    result = add[left, right]
+    puts "  #{left.inspect}"
+    puts "+ #{right.inspect}"
+    puts "= #{result.inspect} (#{to_node[result].mag})"
+    puts
+    result
+}.then { to_node[_1].mag }
+
+# Part 2
+p input.permutation(2).map { |left, right|
+    result = add[left, right]
+    [to_node[result].mag, result]
+}.max
+```
+
+</details>
+
 
 
