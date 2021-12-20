@@ -903,5 +903,211 @@ p input.permutation(2).map { |left, right|
 
 </details>
 
+### [Day 19: Beacon Scanner](https://www.reddit.com/r/adventofcode/comments/rjpf7f/2021_day_19_solutions/)
 
+<details><summary>See code</summary>
 
+Ruby, 40 / 120
+
+Part 1:
+
+```ruby
+require 'set'
+
+$orientations = [0, 1, 2].permutation.to_a.flat_map { |a| [1, -1].repeated_permutation(3).to_a.map { |b| a.zip(b) } }
+$gid = 100
+Scanner = Struct.new(:index, :visible_points) do
+    def find_overlap(another)
+        visible_points.points.to_a.product(another.visible_points.points.to_a).each do |point1, point2|
+            $orientations.each do |o|
+                found_points = another.visible_points.transform_points(point2, point1, o)
+                overlap = (found_points & visible_points.points)
+                if overlap.size >= 12
+                    return Scanner.new(($gid += 1), PointSet.new((found_points | visible_points.points).to_set))
+                end
+            end
+        end
+        return nil
+    end
+end
+
+PointSet = Struct.new(:points) do
+    def transform_points(pivot, target, mapping)
+        map = -> point { mapping.map { point[_1] * _2 } }
+        mapped_pivot = map[pivot]
+        delta = target.zip(mapped_pivot).map { |tv, pv| tv - pv }
+        translate = -> point { point.zip(delta).map { |a, b| a + b } }
+        points.map { translate[map[_1]] }.to_set
+    end
+end
+
+scanners = $<.read.split(/--- scanner (\d+) ---/).drop(1).each_slice(2).map {|a,b| Scanner.new(a.to_i, PointSet.new(b.split.map { _1.split(',').map(&:to_i) }.to_set)) }
+
+loop do
+    p scanners.length
+    scanners.combination(2).to_a.each do |a, b|
+        overlap = a.find_overlap(b)
+        if overlap
+            scanners.delete(a)
+            scanners.delete(b)
+            scanners << overlap
+            break
+        end
+    end
+    if scanners.length == 1
+        p scanners[0].visible_points.points.count
+        break
+    end
+end
+```
+
+Part 2a:
+
+```ruby
+require 'set'
+
+$orientations = [0, 1, 2].permutation.to_a.flat_map { |a| [1, -1].repeated_permutation(3).to_a.map { |b| a.zip(b) } }
+$gid = 100
+Scanner = Struct.new(:index, :visible_points, :overlap_with) do
+    def find_overlap(another)
+        visible_points.points.to_a.product(another.visible_points.points.to_a).each do |point1, point2|
+            $orientations.each do |o|
+                transformer = another.visible_points.transformer(point2, point1, o)
+                found_points = another.visible_points.transform_points(transformer)
+                overlap = (found_points & visible_points.points)
+                if overlap.size >= 12
+                    puts "#{index} overlaps with #{another.index} size #{overlap.size}: #{point2} #{point1} #{o}"
+                    return
+                end
+            end
+        end
+        return
+    end
+end
+
+PointSet = Struct.new(:points) do
+    def transformer(pivot, target, mapping)
+        map = -> point { mapping.map { point[_1] * _2 } }
+        mapped_pivot = map[pivot]
+        delta = target.zip(mapped_pivot).map { |tv, pv| tv - pv }
+        translate = -> point { point.zip(delta).map { |a, b| a + b } }
+        -> point { translate[map[point]] }
+    end
+    def transform_points(transformer)
+        points.map(&transformer).to_set
+    end
+end
+
+scanners = $<.read.split(/--- scanner (\d+) ---/).drop(1).each_slice(2).map {|a,b| Scanner.new(a.to_i, PointSet.new(b.split.map { _1.split(',').map(&:to_i) }.to_set)) }
+scanners.combination(2).to_a.each do |a, b|
+    a.find_overlap(b)
+    b.find_overlap(a)
+end
+puts "done"
+```
+
+Output from 2a is fed into 2b:
+
+```ruby
+Association = Struct.new(:from, :to, :pivot, :target, :orientation)
+
+data = $<.read
+    .scan(/(\d+) overlaps with (\d+) [^:]+: ([^\]]+\]) ([^\]]+\]) (.+)/)
+    .map { Association.new(_1.to_i, _2.to_i, eval(_3), eval(_4), eval(_5)) }
+
+def transformer(pivot, target, mapping)
+    map = -> point { mapping.map { point[_1] * _2 } }
+    mapped_pivot = map[pivot]
+    delta = target.zip(mapped_pivot).map { |tv, pv| tv - pv }
+    translate = -> point { point.zip(delta).map { |a, b| a + b } }
+    -> point { translate[map[point]] }
+end
+
+get_pos = -> current, target, path {
+    if current == target
+        return [0,0,0]
+    end
+    visited = path.map(&:to)
+    data.each do |association|
+        next if association.from != current
+        next if visited.include?(association.to)
+        visited << association.to
+        found = get_pos[association.to, target, path + [association]]
+        if found
+            xf = transformer(association.pivot, association.target, association.orientation)
+            return xf[found]
+        end
+    end
+    return nil
+}
+
+pos = (0..29).map do |i|
+    scanner_pos = get_pos[0, i, []]
+    puts "Scanner #{i}: #{get_pos[0, i, []]}"
+    scanner_pos
+end
+
+p pos.combination(2).map { |a, b| a.zip(b).map { (_1 - _2).abs }.sum }.max
+```
+
+</details>
+
+### [Day 20: Trench Map](https://www.reddit.com/r/adventofcode/comments/rkf5ek/2021_day_20_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+algorithm, input = $<.read.split(/\n\s*\n/)
+algorithm = algorithm.split.join
+
+light = {}
+input.lines.each_with_index.map { |line, i| line.strip.chars.each_with_index.map { |char, j| light[[i, j]] = true if char == '#' } }
+
+# (These values are added in after solving)
+DEBUG = false
+SHOW_PROGRESS = !DEBUG
+
+show = -> m {
+    min_i = -100
+    min_j = -100
+    max_i = 220
+    max_j = 220
+    count = 0
+    (min_i..max_i).each do |i|
+        p i if SHOW_PROGRESS
+        (min_j..max_j).each do |j|
+            print m[[i, j]] ? '#' : '.' if DEBUG
+            count += 1 if m[[i, j]]
+        end
+        puts if DEBUG
+    end
+    p count
+}
+
+enhanced = -> m {
+    cache = {}
+    -> c {
+        cache[c] ||= begin
+            i, j = c
+            val = 0
+            (-1..1).each do |di|
+                (-1..1).each do |dj|
+                    val *= 2
+                    val += 1 if m[[i + di, j + dj]]
+                end
+            end
+            algorithm[val]
+        end
+        cache[c] == '#'
+    }
+}
+
+# Part 1: Change to 2
+2.times do
+    light = enhanced[light]
+end
+
+show[light]
+```
+
+</details>
