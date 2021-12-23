@@ -1111,3 +1111,318 @@ show[light]
 ```
 
 </details>
+
+### [Day 21: Dirac Dice](https://www.reddit.com/r/adventofcode/comments/rl6p8y/2021_day_21_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 126 / 208
+
+# Part 1
+Player = Struct.new(:num, :score, :position)
+
+p1 = Player.new(1, 0, 5)
+p2 = Player.new(2, 0, 6)
+
+$die = 0
+$times = 0
+roll = -> {
+    $die += 1
+    $times += 1
+    $die = 1 if $die == 101
+    return $die
+}
+
+roll3 = -> { roll[] + roll[] + roll[] }
+players = [p1, p2]
+loop {
+    player = players.shift
+    players << player
+    move = roll3[]
+    player.position += move
+    player.position -= 1
+    player.position %= 10
+    player.position += 1
+    player.score += player.position
+    p [player]
+    if player.score >= 1000
+        p [players[0].score, $times, players[0].score * $times]
+        break
+    end
+}
+
+# Part 2
+Player = Struct.new(:score, :position)
+GameState = Struct.new(:turn, :players) do
+    def next_states
+        Enumerator.new do |y|
+            [1, 2, 3].product([1, 2, 3], [1, 2, 3]).map(&:sum).each do |sum|
+                y << GameState.new((turn + 1) % 2, players.each_with_index.map { |player, i|
+                    i == turn ? player.dup.tap { |p|
+                        p.position += sum
+                        p.position -= 1
+                        p.position %= 10
+                        p.position += 1
+                        p.score += p.position
+                    } : player
+                })
+            end
+        end
+    end
+    def ended?
+        players.any? { |player| player.score >= 21 }
+    end
+end
+
+initial_state = GameState.new(0, [Player.new(0, 5), Player.new(0, 6)])
+all_states = {}
+p1_win_states = []
+p2_win_states = []
+
+generate_states = -> current_state {
+    return all_states[current_state] if all_states.key?(current_state)
+    all_states[current_state] = Hash.new(0)
+    if current_state.ended?
+        p1_win_states << current_state if current_state.players[0].score >= 21
+        p2_win_states << current_state if current_state.players[1].score >= 21
+    else
+        current_state.next_states.each do |next_state|
+            generate_states[next_state][current_state] += 1
+        end
+    end
+    all_states[current_state]
+}
+
+p :start
+states = generate_states[initial_state]
+p :finish
+
+$cache = {}
+p p1_win_states.count
+p p2_win_states.count
+p all_states.size
+p :compute
+count_paths = -> state {
+    parents = generate_states[state]
+    return 1 if parents.empty?
+    $cache[state] ||= parents.sum { |parent, count| count_paths[parent] * count }
+}
+
+p p1_win_states.sum(&count_paths)
+p p2_win_states.sum(&count_paths)
+```
+
+</details>
+
+### [Day 22: Reactor Reboot](https://www.reddit.com/r/adventofcode/comments/rlxhmg/2021_day_22_solutions/hpix5qp/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 145 / 45
+
+# Part 1
+data = $<.readlines.map { |l|
+    command, xyz = l.split
+    [command, xyz.split(',').map { |r| eval r.split('=').last }]
+}
+
+def loop_range(r, &x)
+    b = [-50, r.begin].max
+    e = [50, r.end].min
+    if b < e
+        (b..e).each(&x)
+    else
+        []
+    end
+end
+
+on = {}
+
+data.each do |cmd, range|
+    case cmd
+    when "on"
+        xr, yr, zr = range
+        loop_range xr do |x|
+            loop_range yr do |y|
+                loop_range zr do |z|
+                    on[[x,y,z]] = 1
+                end
+            end
+        end
+    when "off"
+        xr, yr, zr = range
+        loop_range xr do |x|
+            loop_range yr do |y|
+                loop_range zr do |z|
+                    on.delete([x,y,z])
+                end
+            end
+        end
+    end
+end
+p on.size
+
+# Part 2
+Cube = Struct.new(:x1, :x2, :y1, :y2, :z1, :z2) do
+    def to_s
+        "(#{x1}, #{x2}, #{y1}, #{y2}, #{z1}, #{z2})"
+    end
+    def valid?
+        x1 < x2 && y1 < y2 && z1 < z2
+    end
+    def intersection(cube)
+        Cube.new(
+            [x1, cube.x1].max,
+            [x2, cube.x2].min,
+            [y1, cube.y1].max,
+            [y2, cube.y2].min,
+            [z1, cube.z1].max,
+            [z2, cube.z2].min
+        )
+    end
+    def intersect?(cube)
+        intersection(cube).valid?
+    end
+    def volume
+        (x2 - x1) * (y2 - y1) * (z2 - z1)
+    end
+end
+
+data = $<.readlines.map { |l|
+    command, xyz = l.split
+    [command, Cube.new(*xyz.split(',').flat_map { |r| range = eval(r.split('=').last); [range.begin, range.end + 1] })]
+}
+
+cube_map = {}
+
+fit_cube = -> new_cube, to_add {
+    cube_map.keys.each do |cube|
+        next unless new_cube.intersect?(cube)
+        cube_map.delete(cube)
+        xs = [cube.x1, cube.x2, new_cube.x1, new_cube.x2].uniq.sort
+        ys = [cube.y1, cube.y2, new_cube.y1, new_cube.y2].uniq.sort
+        zs = [cube.z1, cube.z2, new_cube.z1, new_cube.z2].uniq.sort
+        xs.each_cons(2) do |x1, x2|
+            ys.each_cons(2) do |y1, y2|
+                zs.each_cons(2) do |z1, z2|
+                    target_cube = Cube.new(x1, x2, y1, y2, z1, z2)
+                    cube_map[target_cube] = true if to_add[target_cube, cube]
+                end
+            end
+        end
+    end
+}
+
+data.each do |cmd, new_cube|
+    fit_cube[new_cube, -> slice, old_cube { old_cube.intersect?(slice) && !new_cube.intersect?(slice) }]
+    cube_map[new_cube] = true if cmd == 'on'
+end
+
+p cube_map.keys.sum(&:volume)
+```
+
+</details>
+
+<details><summary>See solution explanation</summary>
+
+![image](https://user-images.githubusercontent.com/193136/147194806-e614d737-f631-4d34-b871-ec86dcc356d5.png)
+
+</details>
+
+### [Day 23: Amphipod](https://www.reddit.com/r/adventofcode/comments/rmnozs/2021_day_23_solutions/)
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 613 / 24
+require 'pqueue'
+
+config = $<.read.scan(/\w/)
+
+part = 2
+config = [*config[0...4], *'DCBADBAC'.chars, *config[4...8]] if part == 2
+
+$hallway_xs = [0, 1, 3, 5, 7, 9, 10]
+$room_xs = [2, 4, 6, 8]
+$target_xs = { 'A' => 2, 'B' => 4, 'C' => 6, 'D' => 8 }
+$cost = { 'A' => 1, 'B' => 10, 'C' => 100, 'D' => 1000 }
+
+Amphipod = Struct.new(:id, :target_letter, :x, :y) do
+    def possible_movements(all_amphipods)
+        if y > 0
+            blocked = all_amphipods.any? { |o| o.id != id && o.x == x && o.y == y - 1 }
+            return [] if blocked
+            lefts = $hallway_xs.filter { |hx| hx < x && all_amphipods.none? { |o| o.id != id && o.y == 0 && o.x < x && o.x >= hx } }
+            rights = $hallway_xs.filter { |hx| hx > x && all_amphipods.none? { |o| o.id != id && o.y == 0 && o.x > x && o.x <= hx } }
+            [*lefts, *rights].map { |x| [x, 0] }
+        else
+            target_x = $target_xs[target_letter]
+            between = [x, target_x].sort
+            blocked = all_amphipods.any? { |o| o.id != id && o.y == 0 && between[0] < o.x && o.x < between[1] }
+            return [] if blocked
+            occupied_by_others = all_amphipods.any? { |o| o.id != id && o.y > 0 && o.target_letter != target_letter && o.x == target_x }
+            return [] if occupied_by_others
+            return [[target_x, 4]] if all_amphipods.none? { |o| o.x == target_x && o.y >= 1 }
+            return [[target_x, 3]] if all_amphipods.none? { |o| o.x == target_x && o.y >= 1 && o.y <= 3 }
+            return [[target_x, 2]] if all_amphipods.none? { |o| o.x == target_x && o.y >= 1 && o.y <= 2 }
+            return [[target_x, 1]] if all_amphipods.none? { |o| o.x == target_x && o.y == 1 }
+            return []
+        end
+    end
+    def min_cost
+        return 0 if x == $target_xs[target_letter]
+        if y > 0
+            return $cost[target_letter] * ((x - $target_xs[a.target_letter]).abs + 1)
+        else
+            return $cost[target_letter] * ((x - $target_xs[a.target_letter]).abs + 1 + y)
+        end
+    end
+end
+
+State = Struct.new(:amphipods, :energy, :depth) do
+    def possible_moves
+        next_states = []
+        amphipods.each_with_index do |a, i|
+            a.possible_movements(amphipods).each do |x, y|
+                next_amphipods = amphipods.dup
+                next_amphipods[i] = Amphipod.new(a.id, a.target_letter, x, y)
+                consumption = $cost[a.target_letter] * ((x - a.x).abs + (y - a.y).abs)
+                next_states << State.new(next_amphipods, energy + consumption, depth + 1)
+            end
+        end
+        next_states
+    end
+    def finish?
+        amphipods.all? { |a| a.x == $target_xs[a.target_letter] && a.y > 0 }
+    end
+    def min_cost
+        @min_cost ||= energy + amphipods.sum { |a| $cost[a.target_letter] * (a.x - $target_xs[a.target_letter]).abs }
+    end
+end
+
+state = State.new(config.each_with_index.map { |c, i| Amphipod.new(i, c, $room_xs[i % 4], i / 4 + 1) }, 0, 0)
+fringe = PQueue.new { |a, b| a.min_cost < b.min_cost }
+fringe.push(state)
+visited = {}
+last_time = Time.now
+
+loop do
+    first = fringe.pop
+    break unless first
+    next if visited[first.amphipods]
+    visited[first.amphipods] = true
+    if first.finish?
+        puts first.energy
+        break
+    end
+    if Time.now > last_time + 1.0
+        p [visited.length, fringe.size, first.energy, first.min_cost, first.depth]
+        last_time = Time.now
+    end
+    first.possible_moves.each { |s| fringe.push(s) }
+end
+```
+
+</details>
