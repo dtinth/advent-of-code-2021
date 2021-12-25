@@ -11,7 +11,7 @@ I have in the repo `work.rb` and `input.txt`. I open the project in VS Code and 
 
 ## Solutions
 
-[Day 1: Sonar Sweep](https://adventofcode.com/2021/day/1) - [Reddit](https://www.reddit.com/r/adventofcode/comments/r66vow/2021_day_1_solutions/) 🏌️
+### [Day 1: Sonar Sweep](https://adventofcode.com/2021/day/1) - [Reddit](https://www.reddit.com/r/adventofcode/comments/r66vow/2021_day_1_solutions/) 🏌️
 
 <details><summary>See code</summary>
 
@@ -30,7 +30,7 @@ p $<.map(&:to_i).each_cons(3).each_cons(2).count{_2.sum>_1.sum}
 
 </details>
 
-[Day 2: Dive!](https://adventofcode.com/2021/day/2) - [Reddit](https://www.reddit.com/r/adventofcode/comments/r6zd93/2021_day_2_solutions/)
+### [Day 2: Dive!](https://adventofcode.com/2021/day/2) - [Reddit](https://www.reddit.com/r/adventofcode/comments/r6zd93/2021_day_2_solutions/)
 
 <details><summary>See code</summary>
 
@@ -62,7 +62,7 @@ p xx*y
 
 </details>
 
-[Day 3: Dive!](https://adventofcode.com/2021/day/3) - [Reddit](https://www.reddit.com/r/adventofcode/comments/r7r0ff/2021_day_3_solutions/)
+### [Day 3: Dive!](https://adventofcode.com/2021/day/3) - [Reddit](https://www.reddit.com/r/adventofcode/comments/r7r0ff/2021_day_3_solutions/)
 
 <details><summary>See code</summary>
 
@@ -95,7 +95,7 @@ p [og,co,og*co]
 
 </details>
 
-[Day 4: Giant Squid](https://adventofcode.com/2021/day/4) - [Reddit](https://www.reddit.com/r/adventofcode/comments/r8i1lq/2021_day_4_solutions/)
+### [Day 4: Giant Squid](https://adventofcode.com/2021/day/4) - [Reddit](https://www.reddit.com/r/adventofcode/comments/r8i1lq/2021_day_4_solutions/)
 
 <details><summary>See code</summary>
 
@@ -129,7 +129,7 @@ end
 
 </details>
 
-[Day 5: Hydrothermal Venture](https://adventofcode.com/2021/day/5) - [Reddit](https://www.reddit.com/r/adventofcode/comments/r9824c/2021_day_5_solutions/)
+### [Day 5: Hydrothermal Venture](https://adventofcode.com/2021/day/5) - [Reddit](https://www.reddit.com/r/adventofcode/comments/r9824c/2021_day_5_solutions/)
 
 <details><summary>See code</summary>
 
@@ -187,7 +187,7 @@ p o.values.count { |x| x > 1 }
 
 </details>
 
-[Day 6: Lanternfish](https://adventofcode.com/2021/day/6) - [Reddit](https://www.reddit.com/r/adventofcode/comments/r9z49j/2021_day_6_solutions/)
+### [Day 6: Lanternfish](https://adventofcode.com/2021/day/6) - [Reddit](https://www.reddit.com/r/adventofcode/comments/r9z49j/2021_day_6_solutions/)
 
 <details><summary>See code</summary>
 
@@ -212,7 +212,7 @@ p fishes.values.sum
 
 </details>
 
-[Day 7: The Treachery of Whales](https://adventofcode.com/2021/day/7) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rar7ty/2021_day_7_solutions/)
+### [Day 7: The Treachery of Whales](https://adventofcode.com/2021/day/7) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rar7ty/2021_day_7_solutions/)
 
 <details><summary>See code</summary>
 
@@ -224,7 +224,7 @@ p (0..1000).map { |u| crabs.sum { |x| n = (x-u).abs; (n*(n+1))/2 } }.min
 
 </details>
 
-[Day 8: Seven Segment Search ](https://adventofcode.com/2021/day/8) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rbj87a/2021_day_8_solutions/)
+### [Day 8: Seven Segment Search ](https://adventofcode.com/2021/day/8) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rbj87a/2021_day_8_solutions/)
 
 <details><summary>See code</summary>
 
@@ -253,7 +253,7 @@ p sum
 
 </details>
 
-[Day 9: Smoke Basin](https://adventofcode.com/2021/day/9) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rca6vp/2021_day_9_solutions/)
+### [Day 9: Smoke Basin](https://adventofcode.com/2021/day/9) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rca6vp/2021_day_9_solutions/)
 
 <details><summary>See code</summary>
 
@@ -310,7 +310,7 @@ p basins.map { |b| b[:size] }.sort.last(3).inject(&:*)
 
 </details>
 
-[Day 10: Syntax Scoring](https://adventofcode.com/2021/day/10) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rd0s54/2021_day_10_solutions/)
+### [Day 10: Syntax Scoring](https://adventofcode.com/2021/day/10) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rd0s54/2021_day_10_solutions/)
 
 <details><summary>See code</summary>
 
@@ -370,7 +370,7 @@ p scores[scores.length / 2]
 
 </details>
 
-[Day 11: Dumbo Octopus](https://adventofcode.com/2021/day/11) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rds32p/2021_day_11_solutions/)
+### [Day 11: Dumbo Octopus](https://adventofcode.com/2021/day/11) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rds32p/2021_day_11_solutions/)
 
 <details><summary>See code</summary>
 
@@ -427,7 +427,7 @@ loop {
 
 </details>
 
-[Day 12: Passage Pathing](https://adventofcode.com/2021/day/12) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rehj2r/2021_day_12_solutions/)
+### [Day 12: Passage Pathing](https://adventofcode.com/2021/day/12) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rehj2r/2021_day_12_solutions/)
 
 <details><summary>See code</summary>
 
@@ -470,7 +470,7 @@ p list.length
 
 </details>
 
-[Day 13: Transparent Origami](https://adventofcode.com/2021/day/13) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rf7onx/2021_day_13_solutions/)
+### [Day 13: Transparent Origami](https://adventofcode.com/2021/day/13) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rf7onx/2021_day_13_solutions/)
 
 <details><summary>See code</summary>
 
@@ -519,7 +519,7 @@ plot[]
 
 </details>
 
-[Day 14: Extended Polymerization](https://adventofcode.com/2021/day/14) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rfzq6f/2021_day_14_solutions/)
+### [Day 14: Extended Polymerization](https://adventofcode.com/2021/day/14) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rfzq6f/2021_day_14_solutions/)
 
 <details><summary>See code</summary>
 
@@ -566,7 +566,7 @@ end
 
 </details>
 
-[Day 15: Chiton](https://adventofcode.com/2021/day/15) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rgqzt5/2021_day_15_solutions/)
+### [Day 15: Chiton](https://adventofcode.com/2021/day/15) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rgqzt5/2021_day_15_solutions/)
 
 <details><summary>See code</summary>
 
@@ -644,7 +644,7 @@ end
 
 </details>
 
-[Day 16: Packet Decoder](https://adventofcode.com/2021/day/16) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rhj2hm/2021_day_16_solutions/)
+### [Day 16: Packet Decoder](https://adventofcode.com/2021/day/16) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rhj2hm/2021_day_16_solutions/)
 
 <details><summary>See code</summary>
 
@@ -739,7 +739,7 @@ p evaluate[parse_tree]
 
 </details>
 
-[Day 17: Trick Shot](https://adventofcode.com/2021/day/17) - [Reddit](https://www.reddit.com/r/adventofcode/comments/ri9kdq/2021_day_17_solutions/)
+### [Day 17: Trick Shot](https://adventofcode.com/2021/day/17) - [Reddit](https://www.reddit.com/r/adventofcode/comments/ri9kdq/2021_day_17_solutions/)
 
 <details><summary>See code</summary>
 
@@ -772,7 +772,7 @@ p evaluate[parse_tree]
 
 </details>
 
-[Day 18: Snailfish](https://adventofcode.com/2021/day/18) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rizw2c/2021_day_18_solutions/)
+### [Day 18: Snailfish](https://adventofcode.com/2021/day/18) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rizw2c/2021_day_18_solutions/)
 
 <details><summary>See code</summary>
 
@@ -903,7 +903,7 @@ p input.permutation(2).map { |left, right|
 
 </details>
 
-[Day 19: Beacon Scanner](https://adventofcode.com/2021/day/19) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rjpf7f/2021_day_19_solutions/)
+### [Day 19: Beacon Scanner](https://adventofcode.com/2021/day/19) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rjpf7f/2021_day_19_solutions/)
 
 <details><summary>See code</summary>
 
@@ -1052,7 +1052,7 @@ p pos.combination(2).map { |a, b| a.zip(b).map { (_1 - _2).abs }.sum }.max
 
 </details>
 
-[Day 20: Trench Map](https://adventofcode.com/2021/day/20) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rkf5ek/2021_day_20_solutions/)
+### [Day 20: Trench Map](https://adventofcode.com/2021/day/20) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rkf5ek/2021_day_20_solutions/)
 
 <details><summary>See code</summary>
 
@@ -1112,7 +1112,7 @@ show[light]
 
 </details>
 
-[Day 21: Dirac Dice](https://adventofcode.com/2021/day/21) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rl6p8y/2021_day_21_solutions/)
+### [Day 21: Dirac Dice](https://adventofcode.com/2021/day/21) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rl6p8y/2021_day_21_solutions/)
 
 <details><summary>See code</summary>
 
@@ -1215,7 +1215,7 @@ p p2_win_states.sum(&count_paths)
 
 </details>
 
-[Day 22: Reactor Reboot](https://adventofcode.com/2021/day/22) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rlxhmg/2021_day_22_solutions/hpix5qp/)
+### [Day 22: Reactor Reboot](https://adventofcode.com/2021/day/22) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rlxhmg/2021_day_22_solutions/hpix5qp/)
 
 <details><summary>See code</summary>
 
@@ -1331,7 +1331,7 @@ p cube_map.keys.sum(&:volume)
 
 </details>
 
-[Day 23: Amphipod](https://adventofcode.com/2021/day/23) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rmnozs/2021_day_23_solutions/)
+### [Day 23: Amphipod](https://adventofcode.com/2021/day/23) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rmnozs/2021_day_23_solutions/)
 
 <details><summary>See code</summary>
 
@@ -1427,11 +1427,11 @@ end
 
 </details>
 
-[Day 24: Arithmetic Logic Unit](https://adventofcode.com/2021/day/24) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rnejv5/2021_day_24_solutions/)
+### [Day 24: Arithmetic Logic Unit](https://adventofcode.com/2021/day/24) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rnejv5/2021_day_24_solutions/)
 
 [See write-up](https://notes.dt.in.th/20211224T121217Z7595)
 
-[Day 25: Sea Cucumber](https://adventofcode.com/2021/day/25) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rnejv5/2021_day_24_solutions/)
+### [Day 25: Sea Cucumber](https://adventofcode.com/2021/day/25) - [Reddit](https://www.reddit.com/r/adventofcode/comments/rnejv5/2021_day_24_solutions/)
 
 
 <details><summary>See code</summary>
