@@ -1426,3 +1426,61 @@ end
 ```
 
 </details>
+
+### [Day 24: Arithmetic Logic Unit](https://www.reddit.com/r/adventofcode/comments/rnejv5/2021_day_24_solutions/)
+
+[See write-up](https://notes.dt.in.th/20211224T121217Z7595)
+
+### [Day 25: Sea Cucumber](https://www.reddit.com/r/adventofcode/comments/rnejv5/2021_day_24_solutions/)
+
+
+<details><summary>See code</summary>
+
+```ruby
+# Ruby, 46 / 48
+cukes = $<.readlines.map(&:strip).map(&:chars)
+w = cukes.first.length
+h = cukes.length
+
+map = {}
+cukes.each_with_index do |row, y|
+    row.each_with_index do |c, x|
+        map[[x, y]] = c if c != '.'
+    end
+end
+
+move_target = -> k, v, mode, map {
+    x, y = k
+    proposed = case v
+    when '>'
+        [(x + 1) % w, y]
+    when 'v'
+        [x, (y + 1) % h]
+    end
+    map[proposed] || mode != v ? k : proposed
+}
+
+next_map = -> map, mode {
+    new_map = {}
+    map.each do |k, v|
+        move_to = move_target[k, v, mode, map]
+        new_map[move_to] = v
+    end
+    new_map
+}
+
+i = 0
+loop do
+    c = next_map[next_map[map, '>'], 'v']
+    i += 1
+    puts i
+    break if c == map
+    # (0...h).each do |y|
+    #     (0...w).each do |x|
+    #         print c[[x, y]] || '.'
+    #     end
+    #     puts
+    # end
+    map = c
+end
+```
